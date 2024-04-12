@@ -1,184 +1,159 @@
+package CMS;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cms;
-
-import java.util.regex.Pattern;
-
-
-
 /**
  *
  * @author rjbea
  */
+
+/**
+ * 
+ * TODO
+ *      fromXML
+ *      
+ * 
+ * @author rjbea
+ */
+
+
 public class ContactInfo {
+    
     private String ID;
-    protected String CompanyName;
-    protected String FirstName;
-    protected String LastName;
-    protected String Email; // format matters!
-    protected cms.Position Position;
-    protected String Address;
-    protected String City;
-    protected String State;
-    protected String Zipcode; // format matters!
-    protected cms.ContactStatus ContactStatus;
-    protected cms.SystemStatus SystemStatus;
+    private String CompanyName;
+    private String Name;
+    // private String PhoneNumber; // format matters!
+    private String Email; // format matters!
+    private String Position; // right now it is a string... could be enum?
+    private String Address;
+    private String City;
+    private String State;
+    private String Zipcode; // format matters!
+    private CMS.ContactType ContactType;
+    private java.time.LocalDate MeetingDate;
+    private CMS.ContactStatus ContactStatus;
+    private CMS.SystemStatus SystemStatus;
+    
+    
+    private ContactInfo(String ContactID){
+        this.ID = ContactID;
+        this.CompanyName ="";
+        this.Name ="";
+        this.Email ="";
+        this.Position ="";
+        this.Address ="";
+        this.City ="";
+        this.State ="";
+        this.Zipcode ="";
+        this.MeetingDate = java.time.LocalDate.now();
+        
+        this.ContactType = CMS.ContactType.Unknown;
+        this.ContactStatus = CMS.ContactStatus.Unknown;
+        this.SystemStatus = CMS.SystemStatus.Unkown;
+     
+    
+        
+    }
 
     
-    public ContactInfo(String ID, String CompanyName, String FirstName, String LastName, String Email){
+    public ContactInfo(String ContactID, String CompanyName, String Name, String Email){
+        this(ContactID);
         
-            this.ID = ID;
+        
+        if(CompanyName.length()>0){
             this.CompanyName = CompanyName;
-            this.FirstName = FirstName;
-            this.LastName = LastName;
+        } else{
+
+        }        
+        if((Name.length()>0)){
+            this.Name = Name;
+        } else{
+            System.out.println("Error: invalid name");
+        }
+        
+        if((Email.contains("@")== true) & ( Email.contains(".") == true)){
             this.Email = Email;
-            this.Position = cms.Position.Unknown;
-            this.ContactStatus = cms.ContactStatus.Unkown;
-            this.SystemStatus = cms.SystemStatus.Unknown;
-            this.Validate();
+        } else{
+            System.out.println("Error: invalid email.");
+        }        
+    }    
+    
+    
+    public ContactInfo(String contactID, String companyName, String name, 
+            String email, String contactStatus){
+
+        this(contactID, companyName, name, email);
+
         
+    }    
+
+    public CMS.ContactStatus getContactStatus(){
         
+        return this.ContactStatus;
         
     }
     
-    public boolean Validate(){
-        java.util.ArrayList<Boolean> Results = new java.util.ArrayList<Boolean>();
+    public CMS.SystemStatus getSystemStatus(){
         
-        if((this.CompanyName==null)||(this.CompanyName.length()<=0)){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
+        return this.SystemStatus;
         
-        // Results[1] = FirstName
-        if((this.FirstName==null)||(this.FirstName.length()<=0)){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[2] = LastName
-        if((this.LastName == null)||(this.LastName.length()<=0)){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[3] = Email
-        if((this.Email == null)||((this.Email.length()<5)||
-                (this.Email.contains("@")==false)||(this.Email.contains(".")==false))){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        if(Results.contains(false)==true){
-            this.SystemStatus = cms.SystemStatus.Invalid;
-        } else{
-            this.SystemStatus = cms.SystemStatus.Valid;
-        }
-        
-        return false;
     }
     
-    public java.util.ArrayList<Boolean> ValidateAll(){
-        java.util.ArrayList<Boolean> Results = new java.util.ArrayList<Boolean>();
-        
-        // Results[0] = CompanyName
-        if((this.CompanyName==null)||(this.CompanyName.length()<=0)){
-            Results.add(false);
+    public void setContactStatus(String contactStat){
+        if(contactStat.equalsIgnoreCase("Archive")){
+            this.ContactStatus = CMS.ContactStatus.Archive;
+        } else if(contactStat.equalsIgnoreCase("Current")){
+            this.ContactStatus = CMS.ContactStatus.Current;
+        } else if(contactStat.equalsIgnoreCase("New")){
+            this.ContactStatus = CMS.ContactStatus.New;
         } else{
-            Results.add(true);
+            this.ContactStatus = CMS.ContactStatus.Unknown;
         }
-        
-        // Results[1] = FirstName
-        if((this.FirstName==null)||(this.FirstName.length()<=0)){
-            Results.add(false);
-        } else{
-            Results.add(true);
+    }
+    
+    public void setSystemStatus(String Stat){
+        if(Stat.equalsIgnoreCase("Valid")){
+            this.SystemStatus = CMS.SystemStatus.Valid;
+        } else if(Stat.equalsIgnoreCase("Invalid")){
+            this.SystemStatus = CMS.SystemStatus.Invalid;
+        }else{
+            this.SystemStatus = CMS.SystemStatus.Unkown;
         }
-        
-        // Results[2] = LastName
-        if((this.LastName == null)||(this.LastName.length()<=0)){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[3] = Email
-        if((this.Email == null)||((this.Email.length()<5)||
-                (this.Email.contains("@")==false)||(this.Email.contains(".")==false))){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[4] = Position
-        if(this.Position == cms.Position.Unknown){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[5] = Address
-        if(this.Address.length()<=0){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[6] = City
-        if(this.City.length()<=0){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[7] = State
-        if(this.State.length()<=0){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[8] = Zipcode
-        if(this.Zipcode.length()<=0){
-            Results.add(false);
-        } else{
-            Results.add(true);
-        }
-        
-        // Results[9] = ContactStatus
-        if(this.ContactStatus == cms.ContactStatus.Unkown){
-            Results.add(false);
-        } else{ 
-            Results.add(true);
-        }
-        
-        if((Results.get(0)== true)&&(Results.get(1)==true)&&
-                (Results.get(2)==true)&& (Results.get(3)==true)&&(Results.get(4)==true)){
-            this.SystemStatus = cms.SystemStatus.Valid;
-        } else{
-            this.SystemStatus = cms.SystemStatus.Invalid;
-        }
-        
-        return Results;
-    } 
+    }
     
     /**
      * @return the ID
      */
     public String getID() {
-        return ID;
-    }
 
-    /**
-     * @return the CompanyName
-     */
-    public String getCompanyName() {
-        return CompanyName;
+        return( this.ID );
+
+    }
+    
+    public boolean validate(){
+        boolean validated = true;
+                
+        if(this.CompanyName.length()<=0){
+
+            validated = false;
+            System.out.println("Invalid CompanyName");
+            
+        }
+        if(this.Name.length()<=0){
+            validated = false;
+            System.out.println("Invalid Name");
+        }
+        if((this.Email.length()<=5)|(this.Email.contains("@")==false)|
+                (this.Email.contains(".")==false)|(this.Email.contains(","))){
+          validated = false;
+          System.out.println();
+        }
+        return validated;
     }
 
     /**
@@ -186,62 +161,59 @@ public class ContactInfo {
      * @return 
      */
     public boolean setCompanyName(String CompanyName) {
-        if((CompanyName == null)){
-            System.out.println("CompanyName must not be null");
-            return false;
-        } else{
+        // validate companyname before blindly setting it...
+        boolean results = false;
+        
+        if(( CompanyName.length()>0)& (CompanyName.contains(",")== false)){
             this.CompanyName = CompanyName;
-            return true;
+            results = true;
+        } else{
+            System.out.println("Error: Invalid Company Name");
         }
+
+        return(results);
+        
     }
 
     /**
-     * @return the FirstName
+     * @return the CompanyName
      */
-    public String getFirstName() {
-        return FirstName;
+    public String getCompanyName() {
+        return CompanyName;
+    }    
+    
+    /**
+     * @return the Name
+     */
+    public String getName() {
+
+        return this.Name;
     }
+    
 
     /**
-     * @param FirstName the FirstName to set
+     * @param Name the Name to set
      * @return 
      */
-    public boolean setFirstName(String FirstName) {
-        if((FirstName == null)){
-            System.out.println("FirstName must not be null");
-            return false;
+    public boolean setName(String Name) {
+        boolean results = false;
+        if(Name.length() > 0){
+            this.Name = Name;
+            results=true;
         } else{
-            this.FirstName = FirstName;
-            return true;
-        }
+            System.out.println("Error: Invalid name");
+        }        
+        return(results);
     }
+    
 
-    /**
-     * @return the LastName
-     */
-    public String getLastName() {
-        return LastName;
-    }
-
-    /**
-     * @param LastName the LastName to set
-     * @return 
-     */
-    public boolean setLastName(String LastName) {
-        if((LastName == null)){
-            System.out.println("LastName must not be null");
-            return false;
-        } else{
-            this.LastName = LastName;
-            return true;
-        }
-    }
-
+    
+ 
     /**
      * @return the Email
      */
     public String getEmail() {
-        return Email;
+        return this.Email;
     }
 
     /**
@@ -249,53 +221,46 @@ public class ContactInfo {
      * @return 
      */
     public boolean setEmail(String Email) {
-        if((Email.contains("@")==false)||(Email.contains(".")==false)||(Email.length()<4)){
-            System.out.println("Error: Inavalid Email");
-            return false;
-        }else{
+        boolean results = false;
+        if((Email.contains("@") == true)&(Email.contains(".")== true)){
             this.Email = Email;
-            return true;
-        }
+            results = true;
+        } else{
+            System.out.println("Error: Invalid Email");
+        }        
+
+        return(results);
     }
 
     /**
      * @return the Position
      */
     public String getPosition() {
-        return Position.toString();
+            return this.Position;        
     }
 
     /**
-     * @param Position the Posi
-     * @return tion to set
+     * @param Position the Position to set
+     * @return 
      */
     public boolean setPosition(String Position) {
-        if(Position.equalsIgnoreCase("Customer")==true){
-            this.Position = cms.Position.Customer;
-            return true;
-        } else if(Position.equalsIgnoreCase("Engineer")==true){
-            this.Position = cms.Position.Engineer;
-            return true;
-        } else if(Position.equalsIgnoreCase("Manager")==true){
-            this.Position = cms.Position.Manager;
-            return true;
-        } else if(Position.equalsIgnoreCase("Student")==true){
-            this.Position = cms.Position.Student;
-            return true;
-        } else if(Position.equalsIgnoreCase("Unkown")==true){
-            this.Position = cms.Position.Unknown;
-            return true;
-        }else {
-            System.out.println("Error: Unhandled Position");
-            return false;
-        }
+        boolean results = false;
+
+        if(Position.length() > 0 ){
+            this.Position = Position;
+            results = true;
+        } else{
+            System.out.println("Error: Invalid Position");
+        }        
+        
+        return(results);
     }
 
     /**
      * @return the Address
      */
     public String getAddress() {
-        return Address;
+        return this.Address;
     }
 
     /**
@@ -303,20 +268,21 @@ public class ContactInfo {
      * @return 
      */
     public boolean setAddress(String Address) {
-        if((Address == null)){
-            System.out.println("Adress must not be null");
-            return false;
-        } else{
+        boolean results = false;
+        if(Address.length() > 0 ){
             this.Address = Address;
-            return true;
-        }
+            results = true;
+        } else{
+            System.out.println("Error: Invalid Address");
+        }        
+        return(results);
     }
 
     /**
      * @return the City
      */
     public String getCity() {
-        return City;
+        return this.City;
     }
 
     /**
@@ -324,13 +290,14 @@ public class ContactInfo {
      * @return 
      */
     public boolean setCity(String City) {
-        if((City == null)){
-            System.out.println("City must not be null");
-            return false;
-        } else{
+        boolean results = false;
+        if(City.length()>0){
             this.City = City;
-            return true;
+            results = true;
+        } else{
+            System.out.println("Error: Invalid City Name");
         }
+        return(results);
     }
 
     /**
@@ -345,13 +312,14 @@ public class ContactInfo {
      * @return 
      */
     public boolean setState(String State) {
-        if((State == null)){
-            System.out.println("State must not be null");
-            return false;
-        } else{
+        boolean results = false;
+        if(State.length()>0){
             this.State = State;
-            return true;
+            results = true;
+        } else{
+            System.out.println("Error: Invalid State");
         }
+        return(results);
     }
 
     /**
@@ -363,82 +331,288 @@ public class ContactInfo {
 
     /**
      * @param Zipcode the Zipcode to set
+     * @return 
      */
-    public void setZipcode(String Zipcode) {
+    public boolean setZipcode(String Zipcode) {
+        boolean results = false;
+        if(Zipcode.length()>0){
         this.Zipcode = Zipcode;
-    }
-
-    /**
-     * @return the ContactStatus
-     */
-    public String getContactStatus() {
-        return ContactStatus.toString();
-    }
-
-    /**
-     * @param ContactStatus the ContactStatus to set
-     * @return 
-     */
-    public boolean setContactStatus(String ContactStatus) {
-        
-        if(ContactStatus.equalsIgnoreCase("New")==true){
-            this.ContactStatus = cms.ContactStatus.New;
-            return true;
-        } else if(ContactStatus.equalsIgnoreCase("Current")==true){
-            this.ContactStatus = cms.ContactStatus.Current;
-            return true;
-        } else if(ContactStatus.equalsIgnoreCase("Archive")==true){
-            this.ContactStatus = cms.ContactStatus.Archive;
-            return true;
-        } else if(ContactStatus.equalsIgnoreCase("Unknown")==true){
-            this.ContactStatus = cms.ContactStatus.Unkown;
-            return true;
-        }else {
-            System.out.println("Error: Unhandled Contact Status");
-            return false;
+        results = true;
+        } else{
+            System.out.println("Error: Invalid Zipcode");
         }
+        return(results);
     }
 
     /**
-     * @return the SystemStatus
+     * @return the MeetingDate
      */
-    public String getSystemStatus() {
-        return SystemStatus.toString();
+    public java.time.LocalDate getMeetingDate() {
+
+
+
+
+        return MeetingDate;        
     }
-    
-    // Importable
-    
+
     /**
-     * 
-     * 
-     * @param Text
+     * @param MeetingDate the MeetingDate to set
      * @return 
      */
-    public cms.ContactInfo fromXML(String Text){
+    public boolean setMeetingDate(String date) {
+        String chunks[] = date.split("-");
+        boolean results = false;
+        if(chunks.length==3){
+            int year = java.lang.Integer.parseInt(chunks[0]);
+            int month = java.lang.Integer.parseInt(chunks[1]);
+            int day = java.lang.Integer.parseInt(chunks[2]);
+            results = true;
+            this.MeetingDate = java.time.LocalDate.of(year, month, day);
+        } else{
+            
+        }
+            
+        return(true);
+    }
+    
+    
+    public static CMS.ContactInfo fromCSV(String line) throws java.lang.Exception{
+        String[] chunks;
+        CMS.ContactInfo Results;
+        String ID;
+        String CompanyName;
+        String Name;
+        String Position;
+        String Address;
+        String City;
+        String State;
+        String Zipcode;
+        String Email;
+        String MeetingDate;
+        String ContactStatus;
+        String SystemStatus;
+
         
+        if((line == null)|| (line.length()==0)){
+            throw new Exception("Error: invalid csv string");
+        } else{
+            chunks = line.split(",");
+            if(chunks.length == 12){
+                ID = chunks[0];
+                CompanyName = chunks[1];
+                Name = chunks[2];
+                Email = chunks[3];
+                Address = chunks[4];
+                City = chunks[5];
+                State = chunks[6];
+                Zipcode = chunks[7];
+                Position = chunks[8];
+                MeetingDate = chunks[9];
+                ContactStatus = chunks[10];
+                SystemStatus = chunks[11];
+                
+            } else{
+                throw new Exception("Error: invalid csv string");
+            }
+        }
+        
+        Results = new CMS.ContactInfo(ID, CompanyName, Name, Email, ContactStatus);
+        
+        
+        if((Address.equalsIgnoreCase("")== true)){
+        } else{        
+            Results.setAddress(Address);
+        }
+        
+        if((City.equalsIgnoreCase(" ")== true)){
+
+        } else{
+            Results.setCity(City);
+        }
+        
+        if((State.equalsIgnoreCase(" ")== true)){
+        } else{
+            Results.setState(State);
+        }
+        
+        if((Zipcode.equalsIgnoreCase(" ")== true)){
+
+        } else{
+            Results.setZipcode(Zipcode);
+        }
+        
+        if((Position.equalsIgnoreCase(" ")== true)){
+
+        } else{
+            Results.setPosition(Position);
+        }
+        
+        if((MeetingDate == null)){
+        } else{
+        }
+        
+        if((ContactStatus == null)){
+        } else{
+        }
+        
+        if((SystemStatus == null)){
+        } else{
+        }
+        
+        return Results;
+    }
+    
+    
+    
+    public void setContactStatus(CMS.ContactStatus Status){
+        
+        this.ContactStatus = Status;
+        
+    }
+    
+    
+    
+    
+    public String toCSV(){
+        String results ="";
+        
+        
+        
+        results += this.ID +",";
+        if((this.CompanyName.equalsIgnoreCase("")== true)||(this.CompanyName == null)){
+            results += " ,";        
+        } else{    
+            results += this.CompanyName +",";
+        }
+        
+        if((this.Name.equalsIgnoreCase("")== true)||(this.Name == null)){
+            results += " ,";
+        } else{
+            results += this.Name +",";
+        }
+        
+        if((this.Email.equalsIgnoreCase("")==true)||(this.Email == null)){
+            
+        } else{
+            results += this.Email + ",";
+        }
+        
+        if((this.Address.equalsIgnoreCase("")== true)||(this.Address == null)){
+            results += " ,";
+        } else{        
+            results += this.Address +",";
+        }
+        
+        if((this.City.equalsIgnoreCase("")== true)||(this.City == null)){
+            results += " ,";
+        } else{
+            results += this.City +",";
+        }
+        
+        if((this.State.equalsIgnoreCase("")== true)||(this.State == null)){
+            results += " ,";
+        } else{
+            results += this.State +",";
+        }
+        
+        if((this.Zipcode.equalsIgnoreCase("")== true)||(this.Zipcode == null)){
+            results += " ,";
+        } else{
+            results += this.Zipcode +",";
+        }
+        
+        if((this.Position.equalsIgnoreCase("")== true)||(this.Position == null)){
+            results += " ,";
+        } else{
+            results += this.Position +",";
+        }
+        
+        if((this.MeetingDate == null)){
+            results += " ,";
+        } else{
+            results += this.MeetingDate.toString() +",";
+        }
+        
+        if((this.ContactStatus == null)){
+            results += " ,";
+        } else{
+            results += this.ContactStatus +",";
+        }
+        
+        if((this.SystemStatus == null)){
+            results += " ,";
+        } else{
+            results +=  this.SystemStatus + "\n";
+        }
+        
+        return(results);
+    } 
+    
+
+    
+    public String toCustom(){
+        String results ="";
+        results += "ID: " + this.ID + '\n';
+        results += "CompanyName: " + this.CompanyName + '\n';
+        results += "Name: " + this.Name + '\n';
+        results += "Email: " + this.Email + '\n';
+        results += "Address: " + this.Address + '\n';
+        results += "City: " + this.City + '\n';
+        results += "State: " + this.State + '\n';
+        results += "Zipcode: " + this.Zipcode + '\n';
+        results += "Position: " + this.Position + '\n';
+        results += "Meeting Date: " + this.MeetingDate.toString() + '\n';
+        results += "ContactStatus: " + this.ContactStatus.toString() + '\n';
+        results += "SystemStatus: " + this.SystemStatus.toString() + '\n';
+        
+        return(results);
+    }
+
+    public String toXML(){
+        String results = "";
+        results += "<ContactInfo>" + '\n';
+        results += "  <ID>"+this.ID+"</ID>"+'\n';
+        results += "  <CompanyName>"+this.CompanyName+"</CompanyName>"+'\n';
+        results += "  <Name>"+this.Name+"</Name>"+'\n';
+        results += "  <Email>"+this.Email+"</Email>"+'\n';
+        results += "  <Address>"+this.Address+"</Address>"+'\n';
+        results += "  <City>"+this.City+"</City>"+'\n';
+        results += "  <State>"+this.State+"</State>"+'\n';
+        results += "  <Zipcode>"+this.Zipcode+"</Zipcode>"+'\n';
+        results += "  <Position>"+this.Position+"</Position>"+'\n';
+        results += "  <MeetingDate>"+this.MeetingDate+"</MeetingDate>"+'\n';
+        results += "  <ContactStatus>"+this.ContactStatus.toString()+"</ContactStatus>"+'\n';
+        results += "  <SystemStatus>"+this.SystemStatus.toString()+"</SystemStatus>"+'\n';
+        results +="</ContactInfo>" + '\n';
+        return (results);
+    }
+    
+    public CMS.ContactInfo fromXML(String Text){
         String ID = "";
         String CompanyName = "";
-        String FirstName = "";
-        String LastName = "";
+        String Name = "";
         String Email = "";
-        String Position = "";
         String Address = "";
         String City = "";
         String State = "";
         String Zipcode = "";
+        String Position = "";
+        String MeetingDate = "";
         String ContactStatus = "";
+        String SystemStatus = "";
 
         Pattern IDPat = Pattern.compile("<ID>([^<]+)</ID>");
         Pattern CNPat = Pattern.compile("<CompanyName>([^<]+)</CompanyName>");
-        Pattern FirstNamPat = Pattern.compile("<FirstName>([^<]+)</FirstName>");
-        Pattern LastNamPat = Pattern.compile("<LastName>([^<]+)</lasstName>");
+        Pattern NamPat = Pattern.compile("<Name>([^<]+)</Name>");
         Pattern EmPat = Pattern.compile("<Email>([^<]+)</Email>");
-        Pattern PosPat = Pattern.compile("<Position>([^<]+)</Position>");
         Pattern AddPat = Pattern.compile("<Address>([^<]+)</Address>");
         Pattern CitPat = Pattern.compile("<City>([^<]+)</City>");
         Pattern StatePat = Pattern.compile("<State>([^<]+)</State>");
         Pattern ZipPat = Pattern.compile("<Zipcode>([^<]+)</Zipcode>");
+        Pattern PosPat = Pattern.compile("<Position>([^<]+)</Position>");
+        Pattern MDPat = Pattern.compile("<MeetingDate>([^<]+)</MeetingDate>");
         Pattern CSPat = Pattern.compile("<ContactStatus>([^<]+)</ContactStatus>");
+        Pattern SSPat = Pattern.compile("<SystemStatus>([^<]+)</SystemStatus>");
 
         java.util.regex.Matcher matcher;
 
@@ -452,14 +626,9 @@ public class ContactInfo {
             CompanyName = matcher.group(1);
         }
 
-        matcher = FirstNamPat.matcher(Text);
+        matcher = NamPat.matcher(Text);
         if (matcher.find()) {
-            FirstName = matcher.group(1);
-        }
-        
-        matcher = LastNamPat.matcher(Text);
-        if (matcher.find()) {
-            LastName = matcher.group(1);
+            Name = matcher.group(1);
         }
 
         matcher = EmPat.matcher(Text);
@@ -492,51 +661,88 @@ public class ContactInfo {
             Position = matcher.group(1);
         }
 
+        matcher = MDPat.matcher(Text);
+        if (matcher.find()) {
+            MeetingDate = matcher.group(1);
+        }
 
         matcher = CSPat.matcher(Text);
         if (matcher.find()) {
             ContactStatus = matcher.group(1);
         }
-        try{
-            cms.ContactInfo Results = new cms.ContactInfo(ID, CompanyName, FirstName, LastName, Email);
-            
-            Results.setPosition(Position);
-            Results.setAddress(Address);
-            Results.setCity(City);
-            Results.setState(State);
-            Results.setZipcode(Zipcode);
-            Results.setContactStatus(ContactStatus);
-            Results.Validate();
-            
-            return Results;
-        } catch(Exception ex){
-            System.out.println(ex);
-            cms.ContactInfo Results = null;
-            return Results;
+
+        matcher = SSPat.matcher(Text);
+        if (matcher.find()) {
+            SystemStatus = matcher.group(1);
         }
         
+        this.ID = ID;
+        this.Name = Name;
+        this.CompanyName = CompanyName;
+        this.Email = Email;
+        this.Address = Address;
+        this.City = City;
+        this.State = State;
+        this.Zipcode = Zipcode;
+        this.Position = Position;
+        this.setContactStatus(ContactStatus);
+        this.setSystemStatus(SystemStatus);
+        
+        this.setMeetingDate(MeetingDate);
+        
+        return null;
     }
     
-    /**
-     * 
-     * @param text
-     * @return
-     * @throws java.lang.Exception 
-     */
-    public static cms.ContactInfo fromCustom(String text) throws java.lang.Exception{
+    public String toString(String Format){
+        String results = "";
+        
+        if((Format==null)||(Format.length() <=0)){
+            
+        } else if(Format.equalsIgnoreCase("CSV")==true){
+            results = this.toCSV();
+        } else if(Format.equalsIgnoreCase("XML")==true){
+            results = this.toXML();
+        } else if(Format.equalsIgnoreCase("CUSTOM")==true){
+            results = this.toCustom();
+        } else if(Format.equalsIgnoreCase("JSON")==true){
+            // results = this.toJSON();
+            results = this.toString();
+        } else{
+            results = this.toString();
+        }
+        
+        return(results);
+    }
+    
+ public static CMS.ContactInfo fromCustom(String text) throws java.lang.Exception{
+        CMS.ContactInfo Results;
         String[] Lines;
         String[] Chunks;
+        /*
+        ID: 00001
+        CompanyName: UAB
+        Name: Robert Beatty
+        Address: 
+        City: 
+        State: 
+        Zipcode: 
+        Position: 
+        MeetingDate:
+        ContactStatus: 
+        SystemStatus:                 
+        */
         String ID = "";
         String CompanyName = "";
-        String FirstName = "";
-        String LastName = "";
+        String Name = "";
         String Email = "";
-        String Position = "";
         String Address = "";
         String City = "";
         String State = "";
         String Zipcode = "";
+        String Position = "";
+        String date ="";
         String CS = "";
+        String SS = "";
         if(text == null){
             System.out.println("Error: Bad Text File");
             System.out.println("CMS.ContactInfo.fromCustom()");
@@ -557,14 +763,10 @@ public class ContactInfo {
                             ID = Chunks[1];
                         } else if(Chunks[0].equalsIgnoreCase("CompanyName")==true){
                             CompanyName = Chunks[1];
-                        } else if(Chunks[0].equalsIgnoreCase("FirstName")==true){
-                            FirstName = Chunks[1];
-                        } else if(Chunks[0].equalsIgnoreCase("LastName")==true){
-                            LastName = Chunks[1];
+                        } else if(Chunks[0].equalsIgnoreCase("Name")==true){
+                            Name = Chunks[1];
                         } else if(Chunks[0].equalsIgnoreCase("Email")==true){
                             Email = Chunks[1];
-                        } else if(Chunks[0].equalsIgnoreCase("Position")==true){
-                            Position = Chunks[1];
                         } else if(Chunks[0].equalsIgnoreCase("Address")){
                             Address = Chunks[1];
                         }else if(Chunks[0].equalsIgnoreCase("City") == true){
@@ -573,8 +775,14 @@ public class ContactInfo {
                             State = Chunks[1];
                         } else if(Chunks[0].equalsIgnoreCase("Zipcode")==true){
                             Zipcode = Chunks[1];
+                        } else if(Chunks[0].equalsIgnoreCase("Position")==true){
+                            Position = Chunks[1];
+                        } else if(Chunks[0].equalsIgnoreCase("MeetingDate")==true){
+                            date = Chunks[1];
                         } else if(Chunks[0].equalsIgnoreCase("ContactStatus")==true){
                             CS = Chunks[1];
+                        } else if(Chunks[0].equalsIgnoreCase("SystemStatus")==true){
+                            SS = Chunks[1];
                         } else{
                             System.out.println("CMS.ContactInfo.fromCustom()");
                             System.out.println("Unhandled MetaData Or Bad Format");
@@ -590,94 +798,52 @@ public class ContactInfo {
             
         }
         
-        if((ID.length()>0)&(FirstName.length()>0)&(LastName.length()>0)
-                &(CompanyName.length()>0)&(Email.contains("@")==true)
-                &(Email.contains(".")==true)){
-           
-            cms.ContactInfo Results = new cms.ContactInfo(ID, CompanyName, FirstName, LastName, Email);
-            
-            Results.setPosition(Position);
+        if((ID.length()>0)&(Name.length()>0)&(CompanyName.length()>0)&
+                (Email.contains("@")==true)&(Email.contains(".")==true)){
+            Results = new CMS.ContactInfo(ID,CompanyName,Name,Email);
             Results.setAddress(Address);
             Results.setCity(City);
             Results.setState(State);
             Results.setZipcode(Zipcode);
+            Results.setPosition(Position);
+            Results.setMeetingDate(date);
             Results.setContactStatus(CS);
-            Results.Validate();
-            return Results; 
+            Results.setSystemStatus(SS);
         } else{
-            return null;
+            Results = null;
                     
         }
         
-
-    }
-
-
-    // Exportables
-    
-    /**
-     * 
-     * @return 
-     */
-    public String toXML(){
-        String results = "";        
-        results += "<ContactInfo>" + '\n';
-        results += "<ID>"+this.ID+"</ID>" + '\n';
-        results += "<CompanyName>"+this.CompanyName+"</CompanyName>" + '\n';
-        results += "<FirstName>"+this.FirstName+"</FirstName>" + '\n';
-        results += "<LastName>"+this.LastName+"</LastName>" + '\n';
-        results += "<Email>"+this.Email+"</Email>" + '\n';
-        results += "<Position>"+this.Position.toString()+"</Position>" + '\n';
-        results += "<Address>"+this.Address+"</Address>" + '\n';
-        results += "<City>"+this.City+"</City>" + '\n';
-        results += "<State>"+this.State+"</State>" + '\n';
-        results += "<Zipcode>"+this.Zipcode+"</Zipcode>" + '\n';
-        results += "<ContactStatus>"+this.ContactStatus.toString()+"</ContactStatus>" + '\n';
-        results += "</ContactInfo>" + '\n';        
-        return results;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public String toCustom(){
-        String results = "";
-        results += "ID: " + this.ID + '\n';
-        results += "CompanyName: " + this.CompanyName + '\n';
-        results += "FirstName: " + this.FirstName + '\n';
-        results += "LastName: " + this.LastName + '\n';
-        results += "Email: " + this.Email + '\n';
-        results += "Position: " + this.Position.toString() + '\n';
-        results += "Address: " + this.Address + '\n';
-        results += "City: " + this.City + '\n';
-        results += "State: " + this.State + '\n';
-        results += "Zipcode: " + this.Zipcode + '\n';
-        results += "ContactStatus: " + this.ContactStatus.toString() + '\n';        
-        return results;
+        if(Results != null){
+            return Results;
+        }else{
+        
+        //System.out.println("Error: Null Resutts in fromCustom");
+            return null;
+        }
     }
     
 }
 
 
-enum Position{
-    Student,
-    Manager,
-    Engineer,
-    Customer,
-    Unknown;
-}
 
 enum ContactStatus{
     New,
     Current,
     Archive,
-    Unkown;
+    Unknown;
 }
 
 enum SystemStatus{
     Valid,
     Invalid,
+    Unkown;
+}
+
+enum ContactType{
+    Sales,
+    Management,
+    Engineer,
+    Support,
     Unknown;
-    
 }
