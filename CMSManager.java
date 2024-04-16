@@ -61,13 +61,7 @@ public class CMSManager {
         if((args.length == 6) && (args[0].equalsIgnoreCase("/add"))) {            
             addToArrayList(ContactInfos, args[1], args[2], args[3], args[4], args[5], "", "", "", "", "", "");
         } else if((args.length == 12) && (args[0].equalsIgnoreCase("/add"))){
-            boolean result = addToArrayList(ContactInfos, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);        
-            if(result == true){
-                System.out.println("true");
-            } else{
-                System.out.println("False");
-            }
-        
+            addToArrayList(ContactInfos, args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);                
         }else if((args.length == 3) && (args[0].equalsIgnoreCase("/search"))) {            
             java.util.ArrayList<cms.ContactInfo> SearchResults = new java.util.ArrayList<>();
             SearchResults = Search(ContactInfos, args[1], args[2]);
@@ -81,9 +75,9 @@ public class CMSManager {
             Update(ContactInfos, args[1], args[2], args[3]);
             
         } else if((args.length == 2) && (args[0].equalsIgnoreCase("/delete"))) {
-            // Logic for deleting contact information
+            Delete(ContactInfos, args[1]);
         } else if((args.length == 2) && (args[0].equalsIgnoreCase("/archive"))) {
-            // Logic for archiving contact information
+            Update(ContactInfos, args[1], "ContactStatus", "Archive");
         } else if((args.length == 1) && (args[0].equalsIgnoreCase("/validate"))) {
             // Logic for validating contact information
         } else {
@@ -152,6 +146,7 @@ public class CMSManager {
         // Save the data and return true
 
     }
+ 
     
     public static boolean Update(java.util.ArrayList<cms.ContactInfo> 
             Contacts, String ID, String Field, String fieldValue){
@@ -231,7 +226,27 @@ public class CMSManager {
 
         Export(Contacts, "ContactInfo.xml", "XML");
 
-
+        
+        
+        return results;
+    }
+    
+    public static boolean Delete(java.util.ArrayList<cms.ContactInfo> Contacts,
+            String ID){
+        boolean results = false;
+        
+        java.util.ArrayList<cms.ContactInfo> Result = new java.util.ArrayList<>();
+        
+        for(cms.ContactInfo Current:Contacts){
+            if( Current.getID().equalsIgnoreCase(ID) == true){
+                // we found a match and removed it
+                results = true;
+            } else{
+                Result.add(Current);
+            }
+        }
+        
+        Export(Result, "ContactInfo.xml", "XML");
         
         return results;
     }
@@ -380,26 +395,21 @@ public class CMSManager {
         String Text = "";
         Text += "=========================================================" + '\n';
         Text += "args[0] args[1]     etc...                   :Use" + '\n';
-        Text += "Initialize :Creates a database when one does not exist" ;
+        Text += "Initialize :Creates a database when one does not exist"  + '\n';
         Text += "/add ID CompanyName FirstName LastName Email" + '\n';
         Text += "   :Add A Contact with minimum requiered information" + '\n';
         Text += "/search fieldType fieldValue" + '\n';
         Text += "   :Search For a contact. Does Not Support Address Information" + '\n';
-//        Text += "/update"
-//        Text += ""
-//        Text += "/delete"
-//        Text += "/validate"
-//        Text += "
-//        Text += "/export"
-//        Text += "
+        Text += "/update ID fieldType fieldValue" + '\n'; 
+        Text += "   :Search for a contact and update a value" + '\n';
+        Text += "/delete ID" + '\n';
+        Text += "/export fileName fileFormat" + '\n';
+        Text += "   :Export your contacts with a specific file and format" + '\n';
         
         System.out.println(Text);
                 
     }
     
-    
-
-
     public static void beta(java.util.ArrayList<cms.ContactInfo> Contacts){
         betaOutput();
     }
