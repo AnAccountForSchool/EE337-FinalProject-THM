@@ -14,16 +14,16 @@ public class Event {
     private String EventName;
     private java.time.LocalDate Day;
     private java.time.LocalTime StartTime;
-    private java.time.Duration Durration;
+    private java.time.Duration Duration;
     private java.time.LocalTime EndTime;
     private String Summary;
     private String Description;
     private String Location;
     private String ID;
-    private cms.Status Status;
+    private cms.EventStatus EventStatus;
     
     public Event(String Name, int Day, int Month, int Year, int StartHour, 
-            int StartMinute, long DurrationHour){
+            int StartMinute, long DurationHour){
         
         // TODO: Validate
         java.time.LocalDate today = java.time.LocalDate.now();
@@ -31,33 +31,33 @@ public class Event {
         this.EventName = Name;
         this.Day = java.time.LocalDate.of(Year, Month, Month);
         this.StartTime = java.time.LocalTime.of(StartHour, StartMinute);
-        this.Durration = java.time.Duration.ofHours(DurrationHour);
-        this.EndTime = this.StartTime.plusHours(DurrationHour);
+        this.Duration = java.time.Duration.ofHours(DurationHour);
+        this.EndTime = this.StartTime.plusHours(DurationHour);
         
         
         if(this.Day.isAfter(today) == true){
-            this.setStatus("Upcoming");
+            this.setEventStatus("Upcoming");
         } else {
-            this.setStatus("Past");
+            this.setEventStatus("Past");
         }
         
     }
     
-    public boolean setStatus(String status){
+    public boolean setEventStatus(String status){
         boolean results = false;
         java.time.LocalDate today = java.time.LocalDate.now();
         if(status.equalsIgnoreCase("Upcoming")){
             if(this.Day.isAfter(today) ==false){
                 System.out.println("Error: Cannot make events before current date 'Upcoming'");
             }else{
-                this.Status = Status.Upcoming;
+                this.EventStatus = EventStatus.Upcoming;
                 results = true;
             }
         }else if(status.equalsIgnoreCase("Past")){
-            this.Status = Status.Past;
+            this.EventStatus = EventStatus.Past;
             results = true;
         } else if(status.equalsIgnoreCase("Canceled")){
-            this.Status = Status.Cancled;
+            this.EventStatus = EventStatus.Cancled;
             results = true;
         }
         return results;
@@ -75,7 +75,7 @@ public class Event {
     }
     
     public boolean Cancel(){
-        this.Status = Status.Cancled;
+        this.EventStatus = EventStatus.Cancled;
         return true;
     }
     
@@ -86,9 +86,9 @@ public class Event {
         this.Day = java.time.LocalDate.of(Year, Month, Month);
         
         if(this.Day.isAfter(today) == true){
-            this.setStatus("Upcoming");
+            this.setEventStatus("Upcoming");
         } else {
-            this.setStatus("Past");
+            this.setEventStatus("Past");
         }
         
         return results;
@@ -121,7 +121,7 @@ public class Event {
 
 }
 
-    enum Status{
+    enum EventStatus{
     
     Upcoming,
     Past,
