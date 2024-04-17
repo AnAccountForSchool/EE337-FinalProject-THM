@@ -10,14 +10,18 @@ import java.io.IOException;
  *
  * @author rjbea
  */
-public class CMSManager {
+public class CMSManager {        
 
+    
+
+    protected static String ContactRepository = "ContactInfo.xml";
+    protected static String ContRepForm = "XML";    
+    protected static String EventRepository = "Events.ics";
+    protected static String EvenntRepForm = "ICS";
+    
     /**
      * @param args the command line arguments
-     */
-    
-    
-    
+     */    
     public static void main(String[] args) {
         // TODO code application logic here
         // java.util.ArrayList<cms.ContactInfo> ContactInfos = new java.util.ArrayList<>();
@@ -35,6 +39,8 @@ public class CMSManager {
     
     public static void GUIInterface(){
         java.util.ArrayList<cms.ContactInfo> ContactInfos = new java.util.ArrayList<>();
+        java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
+        java.util.ArrayList<cms.NewsLetter> NewsLetters = new java.util.ArrayList<>();
     
     }
     
@@ -42,6 +48,8 @@ public class CMSManager {
     public static void CommandLineInterface(String[] args){
         System.out.println("Here");
         java.util.ArrayList<cms.ContactInfo> ContactInfos = new java.util.ArrayList<>();
+        java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
+        java.util.ArrayList<cms.NewsLetter> NewsLetters = new java.util.ArrayList<>();
         
         // args information for debugging
         // need to comment out for release
@@ -79,14 +87,33 @@ public class CMSManager {
         } else if((args.length == 2) && (args[0].equalsIgnoreCase("/archive"))) {
             Update(ContactInfos, args[1], "ContactStatus", "Archive");
         } else if((args.length == 1) && (args[0].equalsIgnoreCase("/validate"))) {
-            // Logic for validating contact information
-        } else {
+            // this might come later
+        } else if ((args.length == 13) && (args[0].equalsIgnoreCase("/EventAdd")==true)){
+            // 1 = id 2 = name 3 = day 4 = month 5 = year 6 = Hr1 7 = min1 8 = hr 2 9 = min2 10 = Sum 11 = desc 12 = loc
+            EventAdd(args[1], args[2], java.lang.Integer.parseInt(args[6]), 
+                    java.lang.Integer.parseInt(args[5]), java.lang.Integer.parseInt(args[4]), 
+                    java.lang.Integer.parseInt(args[6]), java.lang.Integer.parseInt(args[7]), 
+                    java.lang.Integer.parseInt(args[8]), java.lang.Integer.parseInt(args[9]), 
+                    args[12], args[11], args[12]);
+        }else if((args.length == 3)&&(args[0].equalsIgnoreCase("/EventSend"))){
+            
+            java.util.ArrayList<cms.ContactInfo> ResultContacts = cms.CMSManager.Search(ContactInfos, args[2], args[3]);
+            cms.Event Event = getEvent(args[1]);
+            if(Event != null){
+                cms.CMSManager.EventSend(Event, ContactInfos);
+            } else System.out.println("Event not found");
+        
+        }else if(args[0].equalsIgnoreCase("/beta")== true){
+            betaEvent();
+        }else{
             // Display help message
             Help();
         }
     
     }
     
+    
+
     
     /**
      * 
@@ -137,7 +164,7 @@ public class CMSManager {
         } else{
             Contacts.add(newContact);
             betaPrint(Contacts);
-            Export(Contacts, "ContactInfo.xml", "XML");            
+            Export(Contacts, ContactRepository, ContRepForm);            
             return true;
         }
         
@@ -146,7 +173,102 @@ public class CMSManager {
         // Save the data and return true
 
     }
- 
+    
+    
+    
+    public static java.util.ArrayList<cms.Event> EventImportICS(String file){
+        java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
+        java.io.File inputFile = new java.io.File(file);
+        cms.Event currentEvent = null;
+        String line;
+        String text="";
+        try{
+            java.io.FileReader inputFileReader = new java.io.FileReader(inputFile);
+            java.io.BufferedReader buffReader = new java.io.BufferedReader(inputFileReader);
+            
+            while((line = buffReader.readLine())!=null){
+                if (line.contains("BEGIN:VCALENDAR")){
+                    text = "";
+                } else if (line.contains("END:VCALENDAR")){
+                    currentEvent = cms.Event.fromICS(text);
+                    //System.out.println(currentEvent.toICS());
+                    Events.add(currentEvent);
+                } else{
+                    text += line + '\n';
+                }
+            }
+        
+        } catch(IOException ex){
+            System.out.println(ex.toString());
+        }
+        
+        return Events;
+    }
+    
+    public static cms.Event getEvent(String ID){
+        java.util.AbstractList<cms.Event> Events = EventImportICS(EventRepository);
+        
+        for(cms.Event current : Events){
+            if (current.getID().equalsIgnoreCase(ID) ==true) return current;
+        }
+        
+        
+        return null;
+    }
+
+    public static boolean EventAdd(String ID, String Name, int Year, int Month, 
+            int Day, int startHour, int startMin, int endHour, int endMin, String Summary, 
+            String Description, String Location){
+        
+        java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
+        
+        Events = EventImportICS(EventRepository);
+        for(cms.Event current:Events){
+            if (current.getID().equalsIgnoreCase(ID) == true){
+                System.out.println("ID ALREADY EXISTS");
+                return false;
+            }
+        }
+        
+        cms.Event newEvent = new cms.Event(ID, Name, Day, Month, Year, startHour, startMin, endHour, endMin, Summary, Description, Location);
+        
+        return false;
+    }
+    
+    public static boolean EventExport(java.util.ArrayList<cms.Event> Events, String file, String Format){
+        boolean results = false;
+        
+        // Format comming soon
+        
+        String Text = "";
+        for(cms.Event current : Events){
+            Text += current.toICS();
+        }
+        
+        java.io.File outputFile = new java.io.File(file);
+        java.io.FileWriter outFileWriter;
+        try{
+            outFileWriter = new java.io.FileWriter(outputFile);
+            outFileWriter.write(Text);
+            outFileWriter.close();
+            results = true;
+        } catch(Exception ex){
+            
+        }
+        return results;
+    }
+    
+    public static boolean EventSend(cms.Event Event, java.util.ArrayList<cms.ContactInfo> Contacts){
+        java.util.ArrayList<cms.Event> thisEvent = new java.util.ArrayList<>();
+        thisEvent.add(Event);
+        EventExport(thisEvent, Event.getEventName() + ".ics", EvenntRepForm);
+        
+        for(cms.ContactInfo Current : Contacts){
+            System.out.println("Event has been sent to " + Current.FirstName + Current.LastName);
+        }
+        
+        return true;
+    }
     
     public static boolean Update(java.util.ArrayList<cms.ContactInfo> 
             Contacts, String ID, String Field, String fieldValue){
@@ -224,7 +346,7 @@ public class CMSManager {
             System.out.println("Error: unsuported search field");
         }
 
-        Export(Contacts, "ContactInfo.xml", "XML");
+        Export(Contacts, ContactRepository, ContRepForm);
 
         
         
@@ -246,7 +368,7 @@ public class CMSManager {
             }
         }
         
-        Export(Result, "ContactInfo.xml", "XML");
+        Export(Result, ContactRepository, ContRepForm);
         
         return results;
     }
@@ -300,8 +422,8 @@ public class CMSManager {
     
     public static boolean Export(java.util.ArrayList<cms.ContactInfo> Contacts, String File, String Format){
         System.out.println("Export");
-        if(((File.length()>=3) &&(File.contains("."))&&(Format.equalsIgnoreCase("XML")))){
-            System.out.println("XML");
+        if(((File.length()>=3) &&(File.contains("."))&&(Format.equalsIgnoreCase(ContRepForm)))){
+            System.out.println(ContRepForm);
             java.io.File outputFile = new java.io.File(File);
 
             try{
@@ -352,7 +474,7 @@ public class CMSManager {
     }
     
     public static java.util.ArrayList<ContactInfo> importFromDatabase(java.util.ArrayList<ContactInfo> Contacts) {
-        java.io.File inputFile = new java.io.File("ContactInfo.xml");
+        java.io.File inputFile = new java.io.File(ContactRepository);
 
         try {
             java.io.FileReader inputFileReader = new java.io.FileReader(inputFile);
@@ -423,6 +545,43 @@ public class CMSManager {
 
     }
 
+    public static void betaEvent(){
+        String ID = "E001";
+        String Name = "Test Event";
+        int year = 2025;
+        int month = 11;
+        int day = 30;
+        int StartHr = 11;
+        int StartMin = 30;
+        int EndHr = 14;
+        int EndMin = 00;
+        String Summary = "A Test EVENT";
+        String Description ="The First Test Event. Testing Status";
+        String Location = "My imagination";
+        
+        
+        
+        cms.Event TestEvent01 = new cms.Event(ID, Name, day, month, year, StartHr, StartMin, EndHr, EndMin, Summary, Description, Location);
+        java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
+        
+        System.out.println(TestEvent01.toString());
+        
+        Events.add(TestEvent01);
+        
+        cms.CMSManager.EventExport(Events, EventRepository, EvenntRepForm);
+        Events.clear();
+        System.out.println(Events.size());
+        
+        Events = cms.CMSManager.EventImportICS(EventRepository);
+        
+        if(Events.size() > 0){
+            System.out.println(Events.get(0).toICS());
+        } else{
+            System.out.println("Error");
+        }
+        
+    }
+    
     public static void betaOutput(){
             // Test 1, Missing Data, not including ID, Name info, or Email
 
@@ -452,7 +611,7 @@ public class CMSManager {
 
             Contact2.ValidateAll();
 
-            java.io.File outputFile = new java.io.File("ContactInfo.xml");
+            java.io.File outputFile = new java.io.File(ContactRepository);
 
             try{
                 java.io.FileWriter outputFileWriter = new java.io.FileWriter(outputFile);
