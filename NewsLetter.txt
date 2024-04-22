@@ -1,0 +1,6 @@
+ID001
+Subject: A News Letter For You
+IntendedStatus: A News Letter For You
+IntendedPosition: Events.ics
+Body: Hello <FirstName> <LastName>,
+   This is a news letter for you Mr <LastName>.
