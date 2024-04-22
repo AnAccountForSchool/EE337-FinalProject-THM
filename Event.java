@@ -14,6 +14,7 @@ import jdk.jfr.Description;
  */
 public class Event {
     protected String EventName;
+    protected String EventFile;
     protected java.time.LocalDate Day;
     protected java.time.LocalTime StartTime;
     protected java.time.Duration Duration;
@@ -98,7 +99,7 @@ public class Event {
     /**
      * 
      * @param status
-     * @return 
+     * @return
      */    
     public boolean setEventStatus(String status){
         boolean results = false;
