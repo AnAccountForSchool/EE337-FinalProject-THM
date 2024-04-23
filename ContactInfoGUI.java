@@ -18,7 +18,7 @@ public class ContactInfoGUI extends javax.swing.JFrame {
     public ContactInfoGUI() {
         initComponents();
         java.util.ArrayList<cms.ContactInfo> Contacts = new java.util.ArrayList<>();
-        Contacts = cms.CMSManager.importFromDatabase(Contacts);
+        Contacts = cms.CMSManager.importFromDatabase();
         this.ContactTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         
         this.ContactsModel.addColumn("ID");
