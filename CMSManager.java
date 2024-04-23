@@ -185,6 +185,14 @@ public class CMSManager {
 
     }
 
+    /**
+     * 
+     * @param Contacts
+     * @param ID
+     * @param Field
+     * @param fieldValue
+     * @return 
+     */
     public static boolean Update(java.util.ArrayList<cms.ContactInfo> 
             Contacts, String ID, String Field, String fieldValue){
         boolean results = false;
@@ -268,6 +276,12 @@ public class CMSManager {
         return results;
     }
     
+    /**
+     * 
+     * @param Contacts
+     * @param ID
+     * @return 
+     */
     public static boolean Delete(java.util.ArrayList<cms.ContactInfo> Contacts,
             String ID){
         boolean results = false;
@@ -288,6 +302,13 @@ public class CMSManager {
         return results;
     }
     
+    /**
+     * 
+     * @param Contacts
+     * @param Field
+     * @param fieldValue
+     * @return 
+     */
     public static java.util.ArrayList<cms.ContactInfo> Search(java.util.ArrayList<cms.ContactInfo> Contacts,
             String Field, String fieldValue){
         java.util.ArrayList<cms.ContactInfo> Results = new java.util.ArrayList<>();
@@ -335,6 +356,13 @@ public class CMSManager {
         return Results;
     }
     
+    /**
+     * 
+     * @param Contacts
+     * @param File
+     * @param Format
+     * @return 
+     */
     public static boolean Export(java.util.ArrayList<cms.ContactInfo> Contacts, String File, String Format){
         System.out.println("Export");
         if(((File.length()>=3) &&(File.contains("."))&&(Format.equalsIgnoreCase(ContRepForm)))){
@@ -377,6 +405,12 @@ public class CMSManager {
         
     }
     
+    /**
+     * 
+     * @param Contacts
+     * @param ID
+     * @return 
+     */
     public static boolean IDCheck(java.util.ArrayList<cms.ContactInfo> Contacts, String ID){
         boolean results = true;
         
@@ -388,6 +422,11 @@ public class CMSManager {
         return results;
     }
     
+    /**
+     * 
+     * @param Contacts
+     * @return 
+     */
     public static java.util.ArrayList<ContactInfo> importFromDatabase(java.util.ArrayList<ContactInfo> Contacts) {
         java.io.File inputFile = new java.io.File(ContactRepository);
 
@@ -428,6 +467,11 @@ public class CMSManager {
         }
     }
 
+    /**
+     * 
+     * @param file
+     * @return 
+     */
     public static java.util.ArrayList<cms.Event> EventImportICS(String file){
         java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
         java.io.File inputFile = new java.io.File(file);
@@ -457,6 +501,11 @@ public class CMSManager {
         return Events;
     }
     
+    /**
+     * 
+     * @param ID
+     * @return 
+     */
     public static cms.Event getEvent(String ID){
         java.util.AbstractList<cms.Event> Events = EventImportICS(EventRepository);
         
@@ -467,7 +516,17 @@ public class CMSManager {
         
         return null;
     }
-        
+    
+    /**
+     * 
+     * @param ID
+     * @param Title
+     * @param Subject
+     * @param Body
+     * @param Status
+     * @param Position
+     * @return 
+     */
     public static boolean NewsLetterAdd(String ID, String Title, String Subject,
             String Body, String Status, String Position){
         
@@ -488,6 +547,12 @@ public class CMSManager {
 
     }
     
+    /**
+     * 
+     * @param Field
+     * @param fieldValue
+     * @return 
+     */
     public static java.util.ArrayList<cms.NewsLetter> NewsLetterSearch(String Field, String fieldValue){
         java.util.ArrayList<cms.NewsLetter> NewsLetters = NewsLetterImport(NewsletterRepository);
         java.util.ArrayList<cms.NewsLetter> Results = new java.util.ArrayList<cms.NewsLetter>();
@@ -521,6 +586,11 @@ public class CMSManager {
         return Results;
     }
     
+    /**
+     * 
+     * @param ID
+     * @return 
+     */
     public static String NewsLetterReview(String ID){
         java.util.ArrayList<cms.NewsLetter> Newsletters = NewsLetterSearch("ID", ID);
 
@@ -529,11 +599,23 @@ public class CMSManager {
         return Newsletters.get(0).toString();
     }
     
+    /**
+     * 
+     * @param ID
+     * @param Field
+     * @param fieldValue
+     * @return 
+     */
     public static java.util.ArrayList<cms.NewsLetter> NewsLetterUpdate(String ID, String Field, String fieldValue){
         
         return null;
     }
     
+    /**
+     * 
+     * @param ID
+     * @return 
+     */
     public static boolean NewsLetterDelete(String ID){
         
         System.out.println("Not Yet Implemented");
@@ -542,6 +624,12 @@ public class CMSManager {
         return false;
     }
     
+    /**
+     * 
+     * @param NewsLetter
+     * 
+     * @return 
+     */
     public static boolean NewsLetterSend(cms.NewsLetter NewsLetter){
         
         java.util.ArrayList<cms.ContactInfo> Contacts = new java.util.ArrayList<>();
@@ -559,6 +647,11 @@ public class CMSManager {
         return false;
     }
     
+    /**
+     * 
+     * @param File
+     * @return 
+     */
     public static java.util.ArrayList<cms.NewsLetter> NewsLetterImport(String File){
         System.out.println("Import");
         File = NewsletterRepository; // Remove in final product
@@ -591,6 +684,11 @@ public class CMSManager {
         return null;
     }
     
+    /**
+     * 
+     * @param NewsLetters
+     * @return 
+     */
     public static boolean NewsLetterExport(java.util.ArrayList<cms.NewsLetter> NewsLetters){
         
         java.io.File outputFile = new java.io.File(NewsletterRepository);
@@ -611,7 +709,22 @@ public class CMSManager {
         return true;
     }
     
-    
+    /**
+     * 
+     * @param ID
+     * @param Name
+     * @param Year
+     * @param Month
+     * @param Day
+     * @param startHour
+     * @param startMin
+     * @param endHour
+     * @param endMin
+     * @param Summary
+     * @param Description
+     * @param Location
+     * @return 
+     */
     public static boolean EventAdd(String ID, String Name, int Year, int Month, 
             int Day, int startHour, int startMin, int endHour, int endMin, String Summary, 
             String Description, String Location){
@@ -630,7 +743,13 @@ public class CMSManager {
         
         return false;
     }
-    
+    /**
+     * 
+     * @param Events
+     * @param file
+     * @param Format
+     * @return 
+     */
     public static boolean EventExport(java.util.ArrayList<cms.Event> Events, String file, String Format){
         boolean results = false;
         
@@ -653,7 +772,12 @@ public class CMSManager {
         }
         return results;
     }
-    
+    /**
+     * 
+     * @param Event
+     * @param Contacts
+     * @return 
+     */
     public static boolean EventSend(cms.Event Event, java.util.ArrayList<cms.ContactInfo> Contacts){
         java.util.ArrayList<cms.Event> thisEvent = new java.util.ArrayList<>();
         thisEvent.add(Event);
@@ -665,7 +789,9 @@ public class CMSManager {
         
         return true;
     }
-    
+    /**
+     * 
+     */
     public static void Help(){
         String Text = "";
         Text += "=========================================================" + '\n';
@@ -684,11 +810,17 @@ public class CMSManager {
         System.out.println(Text);
                 
     }
-    
+   /**
+    * 
+    * @param Contacts 
+    */ 
     public static void beta(java.util.ArrayList<cms.ContactInfo> Contacts){
         betaOutput();
     }
-
+/**
+ * 
+ * @param Contacts 
+ */
     public static void betaPrint(java.util.ArrayList<cms.ContactInfo> Contacts){
         System.out.println("Here");
         for(cms.ContactInfo CurrentCotnact : Contacts){
@@ -697,7 +829,9 @@ public class CMSManager {
 
 
     }
-    
+    /**
+     * 
+     */
     public static void betaNewsletter(){
         String ID = "001";
         String Title = "A NewsLetter";
@@ -719,7 +853,9 @@ public class CMSManager {
         System.out.println(BetaList.get(0).toCustom());
         
     }
-
+    /**
+     * 
+     */
     public static void betaEvent(){
         String ID = "E001";
         String Name = "Test Event";
@@ -756,7 +892,9 @@ public class CMSManager {
         }
         
     }
-    
+    /**
+     * 
+     */
     public static void betaOutput(){
             // Test 1, Missing Data, not including ID, Name info, or Email
 
