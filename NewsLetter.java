@@ -271,7 +271,10 @@ public class NewsLetter {
     public void setSendStatus(cms.SendStatus SendStatus) {
         this.SendStatus = SendStatus;
     }
-    
+    /**
+     * 
+     * @return 
+     */
     public String toCustom(){
         String results = "";
         results += "ID: " + this.ID + '\n';
@@ -283,7 +286,11 @@ public class NewsLetter {
     
         return results;
     }
-    
+    /**
+     * 
+     * @param Text
+     * @return 
+     */
     public static NewsLetter fromCustom(String Text){
         String[] chunks = Text.split(": ");
         int i = 0;
