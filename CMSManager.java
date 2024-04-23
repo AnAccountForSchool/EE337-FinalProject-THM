@@ -4,6 +4,8 @@
  */
 package cms;
 
+
+
 import java.io.IOException;
 
 /**
@@ -13,11 +15,14 @@ import java.io.IOException;
 public class CMSManager {        
 
     
-
+    // The Contatact Info Repository
     protected static String ContactRepository = "ContactInfo.xml";
-    protected static String ContRepForm = "XML";    
+    protected static String ContRepForm = "XML";
+    // The Event Repository
     protected static String EventRepository = "Events.ics";
     protected static String EvenntRepForm = "ICS";
+    // Contains a list of the Newsletter MetaData
+    // Primarily used for not creating duplicates and storing file location data
     protected static String NewsletterRepository = "Newsletters.txt";
     
     /**
@@ -33,18 +38,25 @@ public class CMSManager {
         if(args.length > 0){
             CommandLineInterface(args); // this works to create a database if there is none
         } else{
-            Help();
+            Help(); // currently there is no GUI Interface, comment out when there is
         }
     }
     
     
+    /**
+     *  All GUI Creation will start here
+     */
     public static void GUIInterface(){
         java.util.ArrayList<cms.ContactInfo> ContactInfos = new java.util.ArrayList<>();
         java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
         java.util.ArrayList<cms.NewsLetter> NewsLetters = new java.util.ArrayList<>();
     
     }
-        
+    
+    /**
+     * 
+     * @param args 
+     */
     public static void CommandLineInterface(String[] args){
         System.out.println("Here");
         java.util.ArrayList<cms.ContactInfo> ContactInfos = new java.util.ArrayList<>();
@@ -104,7 +116,9 @@ public class CMSManager {
             } else System.out.println("Event not found");
         
         }else if(args[0].equalsIgnoreCase("/beta")== true){
-            betaEvent();
+            //betaOutput();
+            //betaEvent();
+            betaNewsletter();
         }else{
             // Display help message
             Help();
@@ -460,10 +474,9 @@ public class CMSManager {
         java.util.ArrayList<cms.NewsLetter> NewsLetters = NewsLetterImport(NewsletterRepository);
         
         
-        cms.ContactStatus IntendedContactStatus = cms.ContactStatus.valueOf(Status);
-        cms.Position IntendedPosition = cms.Position.valueOf(Position);
         
-        cms.NewsLetter newsLetter = new cms.NewsLetter(ID, Subject, Body, IntendedContactStatus, IntendedPosition);
+     
+        cms.NewsLetter newsLetter = new cms.NewsLetter(ID, Subject, Body, Status, Position);
         
         if(newsLetter == null){
             return false;
@@ -534,6 +547,12 @@ public class CMSManager {
         java.util.ArrayList<cms.ContactInfo> Contacts = new java.util.ArrayList<>();
         Contacts = importFromDatabase(Contacts);
         
+        java.util.ArrayList<cms.NewsLetter> NewsLetters = NewsLetter.load(Contacts);
+        
+        for(cms.NewsLetter Current : NewsLetters){
+            System.out.println(Current.getBody());
+        }
+        
         
         
         
@@ -541,9 +560,34 @@ public class CMSManager {
     }
     
     public static java.util.ArrayList<cms.NewsLetter> NewsLetterImport(String File){
+        System.out.println("Import");
+        File = NewsletterRepository; // Remove in final product
+        java.util.ArrayList<cms.NewsLetter> newsLetters = new java.util.ArrayList<>();
         
-        
-        
+        java.io.File inputFile = new java.io.File(File);
+        try{
+            java.io.FileReader inputFileReader = new java.io.FileReader(inputFile);
+            java.io.BufferedReader buffReader = new java.io.BufferedReader(inputFileReader);
+            String line;
+            String text="";
+            while((line = buffReader.readLine()) != null){
+                
+                if(line.contains("EndBody: EndLetter")== false){
+                    text += line;
+                    System.out.println(line);
+                } else{
+                    
+                    cms.NewsLetter newsLetter = cms.NewsLetter.fromCustom(text);
+                    newsLetters.add(newsLetter);
+                    text = "";
+                }
+            }
+            
+            buffReader.close();
+            inputFileReader.close();
+        }catch(IOException ex){
+            System.out.println(ex.toString());
+        }
         return null;
     }
     
@@ -566,6 +610,7 @@ public class CMSManager {
         
         return true;
     }
+    
     
     public static boolean EventAdd(String ID, String Name, int Year, int Month, 
             int Day, int startHour, int startMin, int endHour, int endMin, String Summary, 
@@ -652,6 +697,28 @@ public class CMSManager {
 
 
     }
+    
+    public static void betaNewsletter(){
+        String ID = "001";
+        String Title = "A NewsLetter";
+        String Subject = "A News Letter For You";
+        String Body = "Hello <FirstName> <LastName>," +'\n';
+        Body += "   This is a news letter for you Mr <LastName>.";
+        java.util.ArrayList<NewsLetter> NewsLetters = new java.util.ArrayList<>();
+        
+        cms.NewsLetter beta = new cms.NewsLetter(ID, Subject, Body, "Unknown", "Unknown");
+        
+        NewsLetters.add(beta);
+        
+        NewsLetterExport(NewsLetters);
+        
+        java.util.ArrayList<cms.NewsLetter> BetaList = new java.util.ArrayList<>();
+        
+        BetaList = NewsLetterImport(NewsletterRepository);
+        
+        System.out.println(BetaList.get(0).toCustom());
+        
+    }
 
     public static void betaEvent(){
         String ID = "E001";
@@ -724,7 +791,7 @@ public class CMSManager {
             try{
                 java.io.FileWriter outputFileWriter = new java.io.FileWriter(outputFile);
                 outputFileWriter.write(Contact1.toXML());
-                outputFileWriter.write(Contact2.toXML());
+
                 outputFileWriter.close();
 
             } catch(IOException ex){
