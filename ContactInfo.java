@@ -276,8 +276,8 @@ public class ContactInfo {
      * @return tion to set
      */
     public boolean setPosition(String position) {
-        System.out.println("setPosition");
-        System.out.println(position);
+        //System.out.println("setPosition");
+        //System.out.println(position);
         
         if(position.equalsIgnoreCase("Customer")==true){
             this.Position = cms.Position.Customer;
