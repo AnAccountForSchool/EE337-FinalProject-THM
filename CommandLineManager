@@ -43,7 +43,7 @@ public class CommandLineManager {
             betaOutput();
         }
         
-        ContactInfos = cms.CMSManager.importFromDatabase(ContactInfos);
+        ContactInfos = cms.CMSManager.importFromDatabase();
         
         if((args.length == 6) && (args[0].equalsIgnoreCase("/add"))) {            
         
@@ -61,8 +61,10 @@ public class CommandLineManager {
         
             
             java.util.ArrayList<cms.ContactInfo> SearchResults = new java.util.ArrayList<>();
-            SearchResults = Search(ContactInfos, args[1], args[2]);
-            if(SearchResults.size()>0){
+            System.out.println(SearchResults.size());
+            SearchResults = Search(args[1], args[2]);
+            System.out.print(SearchResults.size());
+            if(SearchResults.isEmpty() == false ){
                 String FileName = "SearchResults_" + args[1]+"_"+args[2]+".txt";
                 Export(SearchResults, FileName , "custom");
             } else{
@@ -101,20 +103,24 @@ public class CommandLineManager {
                     java.lang.Integer.parseInt(args[4]), java.lang.Integer.parseInt(args[5]), 
                     java.lang.Integer.parseInt(args[6]), java.lang.Integer.parseInt(args[7]), 
                     java.lang.Integer.parseInt(args[8]), java.lang.Integer.parseInt(args[9]), 
-                    args[10], args[11], args[12]);
+                    args[10], args[11], args[11]);
 
             
-        } else if ((args.length == 13) && (args[0].equalsIgnoreCase("/EventUpdate")==true)){
+        } else if ((args.length == 4) && (args[0].equalsIgnoreCase("/EventUpdate")==true)){
             
-            System.out.println("Functionality Coming Soon");
+            cms.CMSManager.EventUpdate(args[1], args[2], args[3]);
             
-        }else if((args.length == 3)&&(args[0].equalsIgnoreCase("/EventSend"))){
             
-            java.util.ArrayList<cms.ContactInfo> ResultContacts = cms.CMSManager.Search(ContactInfos, args[2], args[3]);
+        }else if((args.length == 4)&&(args[0].equalsIgnoreCase("/EventSend"))){
+            
+            java.util.ArrayList<cms.ContactInfo> ResultContacts = new java.util.ArrayList<>();
+            ResultContacts = cms.CMSManager.Search(args[2], args[3]);
             cms.Event Event = getEvent(args[1]);
             if(Event != null){
-                cms.CMSManager.EventSend(Event, ContactInfos);
+                cms.CMSManager.EventSend(Event, ResultContacts);
             } else System.out.println("Event not found");
+            
+            
         } else if ((args.length == 7) && (args[0].equalsIgnoreCase("/NewsletterAdd")==true)){
             cms.CMSManager.NewsLetterAdd(args[1], args[2], args[3], args[4], args[5], args[6]);
             
@@ -135,7 +141,8 @@ public class CommandLineManager {
         }else if(args[0].equalsIgnoreCase("/beta")== true){
             //betaOutput();
             //betaEvent();
-            //betaNewsletter();
+            cms.CMSManager.betaNewsletter();
+
         }else{
             // Display help message
             Help();
