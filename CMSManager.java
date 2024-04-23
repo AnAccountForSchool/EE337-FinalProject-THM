@@ -681,7 +681,7 @@ public class CMSManager {
         }catch(IOException ex){
             System.out.println(ex.toString());
         }
-        return null;
+        return newsLetters;
     }
     
     /**
