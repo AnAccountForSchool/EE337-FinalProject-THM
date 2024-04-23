@@ -24,6 +24,7 @@ public class NewsLetter {
     
     protected String ID;
     protected String SubjectLine;
+    protected String NewsLetterFile;
     protected String Body;
     protected String IntendedContactStatus;
     protected String IntendedPosition;
