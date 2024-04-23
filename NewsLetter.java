@@ -75,9 +75,10 @@ public class NewsLetter {
      */
     public java.util.ArrayList<cms.NewsLetter> load(java.util.ArrayList<cms.ContactInfo> Contacts){
         java.util.ArrayList<cms.NewsLetter> results = new java.util.ArrayList<>();
-        
+        System.out.println(this.Body);
         if(this.IntendedContactStatus.equalsIgnoreCase("Unknown")&& this.IntendedPosition.equalsIgnoreCase("Unknown"))
             for(cms.ContactInfo Current : Contacts){
+                this.Contact = Current;
                 this.Valid = true;
                 this.Craft();
                 results.add(this);
@@ -86,6 +87,7 @@ public class NewsLetter {
            for(cms.ContactInfo Current : Contacts){
                if(this.IntendedPosition.equalsIgnoreCase(Current.Position.toString())
                        &&(this.IntendedContactStatus.equalsIgnoreCase(Current.ContactStatus.toString()))){
+                   this.Contact = Current;
                    this.Valid = true;
                    this.Craft();
                    results.add(this);
@@ -100,7 +102,7 @@ public class NewsLetter {
      * @return 
      */
     public boolean Craft(){
-        String ResultBody = "";
+        String ResultBody = this.Body;
         if(this.isValid()== false){
             this.Crafted = false;
             return false;
