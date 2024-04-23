@@ -241,19 +241,19 @@ public class CMSManager {
     
     /**
      * 
-     * @param Contacts
      * @param Field
      * @param fieldValue
      * @return 
      */
-    public static java.util.ArrayList<cms.ContactInfo> Search(java.util.ArrayList<cms.ContactInfo> Contacts,
-            String Field, String fieldValue){
+    public static java.util.ArrayList<cms.ContactInfo> Search(String Field, String fieldValue){
+        java.util.ArrayList<cms.ContactInfo> Contacts = cms.CMSManager.importFromDatabase();
         java.util.ArrayList<cms.ContactInfo> Results = new java.util.ArrayList<>();
                 
         if(Field.equalsIgnoreCase("ID")==true){
             for(cms.ContactInfo Current : Contacts){
-                if(Current.getID().equalsIgnoreCase(fieldValue)){
+                if(Current.getID().equalsIgnoreCase(fieldValue)==true){
                     Results.add(Current);
+                    return Results;
                 }
             }
         }else if(Field.equalsIgnoreCase("CompanyName")==true){
@@ -364,7 +364,8 @@ public class CMSManager {
      * @param Contacts
      * @return 
      */
-    public static java.util.ArrayList<ContactInfo> importFromDatabase(java.util.ArrayList<ContactInfo> Contacts) {
+    public static java.util.ArrayList<ContactInfo> importFromDatabase() {
+        java.util.ArrayList<ContactInfo> Contacts = new java.util.ArrayList<>();
         java.io.File inputFile = new java.io.File(ContactRepository);
 
         try {
@@ -570,7 +571,7 @@ public class CMSManager {
     public static boolean NewsLetterSend(cms.NewsLetter NewsLetter){
         
         java.util.ArrayList<cms.ContactInfo> Contacts = new java.util.ArrayList<>();
-        Contacts = importFromDatabase(Contacts);
+        Contacts = importFromDatabase();
         System.out.println(Contacts.get(0).toXML());
         java.util.ArrayList<cms.NewsLetter> NewsLetters = NewsLetter.load(Contacts);
         
@@ -677,6 +678,7 @@ public class CMSManager {
             int Day, int startHour, int startMin, int endHour, int endMin, String Summary, 
             String Description, String Location){
         
+        System.out.println("EventAdd");
         java.util.ArrayList<cms.Event> Events = new java.util.ArrayList<>();
         
         Events = EventImportICS(EventRepository);
@@ -686,10 +688,14 @@ public class CMSManager {
                 return false;
             }
         }
-        
+
         cms.Event newEvent = new cms.Event(ID, Name, Day, Month, Year, startHour, startMin, endHour, endMin, Summary, Description, Location);
+        System.out.println(newEvent.toICS());
+        Events.add(newEvent);
         
-        return false;
+        EventExport(Events, EventRepository, EvenntRepForm);
+        
+        return true;
     }
     /**
      * 
@@ -720,6 +726,45 @@ public class CMSManager {
         }
         return results;
     }
+
+    public static boolean EventUpdate(String ID, String Field, String FieldValue){
+        java.util.ArrayList<cms.Event> Events = EventImportICS(EventRepository);
+        
+        for(cms.Event current : Events){
+            if(current.getID().equalsIgnoreCase(ID)){
+            
+                switch(Field.toLowerCase()){
+                    case "name":
+                        current.EventName = FieldValue;
+                        break;
+                    case "file":
+                        current.EventFile = FieldValue;
+                        break;
+                    case "date":
+                        System.out.println("Coming Soon");
+                        break;
+                    case "starttime":
+                        System.out.println("Coming Soon");
+                        break;
+                    case "endtime":
+                        System.out.println("Coming Soon");
+                    case "summary":
+                        current.Summary = FieldValue;
+                        break;
+                    case "description":
+                        current.Description = FieldValue;
+                        break;
+                    case "location":
+                        current.Description = FieldValue;
+                }
+            }
+        }
+        
+        EventExport(Events, EventRepository, EvenntRepForm);
+        
+        return false;
+    }
+
     /**
      * 
      * @param Event
@@ -729,7 +774,10 @@ public class CMSManager {
     public static boolean EventSend(cms.Event Event, java.util.ArrayList<cms.ContactInfo> Contacts){
         java.util.ArrayList<cms.Event> thisEvent = new java.util.ArrayList<>();
         thisEvent.add(Event);
-        EventExport(thisEvent, Event.getEventName() + ".ics", EvenntRepForm);
+        String EventName = Event.getEventName().replace(" ", "_");
+        EventExport(thisEvent, EventName + ".ics", EvenntRepForm);
+        
+        
         
         for(cms.ContactInfo Current : Contacts){
             System.out.println("Event has been sent to " + Current.FirstName + Current.LastName);
@@ -763,7 +811,8 @@ public class CMSManager {
     * @param Contacts 
     */ 
     public static void beta(java.util.ArrayList<cms.ContactInfo> Contacts){
-        betaOutput();
+        //betaOutput();
+        betaNewsletter();
     }
     /**
  * 
